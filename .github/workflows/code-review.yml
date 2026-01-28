@@ -1,7 +1,7 @@
 name: Code Review
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize]
 
 jobs:
@@ -12,21 +12,20 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v44
-
-      - name: Review PR
+      - name: Get PR info
+        id: pr-info
         uses: actions/github-script@v7
         with:
           script: |
-            const changedFiles = '${{ steps.changed-files.outputs.all_changed_files }}'.split(' ');
-            const additions = ${{ github.event.pull_request.additions }};
-            const deletions = ${{ github.event.pull_request.deletions }};
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            const changedFiles = files.map(f => f.filename);
+            const additions = context.payload.pull_request.additions;
+            const deletions = context.payload.pull_request.deletions;
             const changedFilesCount = changedFiles.length;
 
             let review = [];
@@ -53,7 +52,7 @@ jobs:
               if (!file) continue;
               if (file.includes('component') || file.includes('Component')) fileTypes.components.push(file);
               else if (file.includes('page') || file.includes('Page')) fileTypes.pages.push(file);
-              else if (file.endsWith('.css') || file.endsWith('.scss') || file.endsWith('.styled.')) fileTypes.styles.push(file);
+              else if (file.endsWith('.css') || file.endsWith('.scss') || file.includes('.styled.')) fileTypes.styles.push(file);
               else if (file.includes('.test.') || file.includes('.spec.')) fileTypes.tests.push(file);
               else if (file.includes('config') || file.endsWith('.json') || file.endsWith('.yml')) fileTypes.configs.push(file);
               else fileTypes.others.push(file);
@@ -66,14 +65,6 @@ jobs:
             if (fileTypes.tests.length) review.push(`- 🧪 테스트: ${fileTypes.tests.length}개`);
             if (fileTypes.configs.length) review.push(`- ⚙️ 설정: ${fileTypes.configs.length}개`);
             if (fileTypes.others.length) review.push(`- 📦 기타: ${fileTypes.others.length}개`);
-            review.push('');
-
-            // Checklist
-            review.push('### ✅ 체크리스트');
-            review.push('- [ ] 코드가 프로젝트 컨벤션을 따르는지 확인');
-            review.push('- [ ] 불필요한 console.log가 없는지 확인');
-            review.push('- [ ] 테스트가 필요한 경우 테스트 코드 작성 여부 확인');
-            review.push('- [ ] 문서 업데이트가 필요한 경우 업데이트 여부 확인');
             review.push('');
 
             // Warnings
@@ -93,7 +84,7 @@ jobs:
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number
+              issue_number: context.payload.pull_request.number
             });
 
             const botComment = comments.find(c => c.user.login === 'github-actions[bot]' && c.body.includes('PR 자동 리뷰'));
@@ -109,7 +100,7 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: context.payload.pull_request.number,
                 body: review.join('\n')
               });
             }
