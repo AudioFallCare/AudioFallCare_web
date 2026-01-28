@@ -1,0 +1,115 @@
+name: Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+
+      - name: Review PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const changedFiles = '${{ steps.changed-files.outputs.all_changed_files }}'.split(' ');
+            const additions = ${{ github.event.pull_request.additions }};
+            const deletions = ${{ github.event.pull_request.deletions }};
+            const changedFilesCount = changedFiles.length;
+
+            let review = [];
+            review.push('## 📋 PR 자동 리뷰\n');
+
+            // Summary
+            review.push('### 📊 변경 사항 요약');
+            review.push(`- 📁 변경된 파일: **${changedFilesCount}개**`);
+            review.push(`- ➕ 추가된 줄: **${additions}줄**`);
+            review.push(`- ➖ 삭제된 줄: **${deletions}줄**`);
+            review.push('');
+
+            // File categorization
+            const fileTypes = {
+              components: [],
+              pages: [],
+              styles: [],
+              tests: [],
+              configs: [],
+              others: []
+            };
+
+            for (const file of changedFiles) {
+              if (!file) continue;
+              if (file.includes('component') || file.includes('Component')) fileTypes.components.push(file);
+              else if (file.includes('page') || file.includes('Page')) fileTypes.pages.push(file);
+              else if (file.endsWith('.css') || file.endsWith('.scss') || file.endsWith('.styled.')) fileTypes.styles.push(file);
+              else if (file.includes('.test.') || file.includes('.spec.')) fileTypes.tests.push(file);
+              else if (file.includes('config') || file.endsWith('.json') || file.endsWith('.yml')) fileTypes.configs.push(file);
+              else fileTypes.others.push(file);
+            }
+
+            review.push('### 📂 변경된 파일 분류');
+            if (fileTypes.components.length) review.push(`- 🧩 컴포넌트: ${fileTypes.components.length}개`);
+            if (fileTypes.pages.length) review.push(`- 📄 페이지: ${fileTypes.pages.length}개`);
+            if (fileTypes.styles.length) review.push(`- 🎨 스타일: ${fileTypes.styles.length}개`);
+            if (fileTypes.tests.length) review.push(`- 🧪 테스트: ${fileTypes.tests.length}개`);
+            if (fileTypes.configs.length) review.push(`- ⚙️ 설정: ${fileTypes.configs.length}개`);
+            if (fileTypes.others.length) review.push(`- 📦 기타: ${fileTypes.others.length}개`);
+            review.push('');
+
+            // Checklist
+            review.push('### ✅ 체크리스트');
+            review.push('- [ ] 코드가 프로젝트 컨벤션을 따르는지 확인');
+            review.push('- [ ] 불필요한 console.log가 없는지 확인');
+            review.push('- [ ] 테스트가 필요한 경우 테스트 코드 작성 여부 확인');
+            review.push('- [ ] 문서 업데이트가 필요한 경우 업데이트 여부 확인');
+            review.push('');
+
+            // Warnings
+            let warnings = [];
+            if (additions > 500) warnings.push('⚠️ 변경량이 500줄을 초과합니다. PR을 더 작게 나누는 것을 고려해주세요.');
+            if (changedFilesCount > 20) warnings.push('⚠️ 20개 이상의 파일이 변경되었습니다. PR을 더 작게 나누는 것을 고려해주세요.');
+            if (fileTypes.tests.length === 0 && fileTypes.components.length > 0) {
+              warnings.push('💡 컴포넌트 변경이 있지만 테스트 파일이 없습니다. 테스트 추가를 고려해주세요.');
+            }
+
+            if (warnings.length > 0) {
+              review.push('### ⚠️ 주의사항');
+              warnings.forEach(w => review.push(w));
+            }
+
+            // Post comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const botComment = comments.find(c => c.user.login === 'github-actions[bot]' && c.body.includes('PR 자동 리뷰'));
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: review.join('\n')
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: review.join('\n')
+              });
+            }
