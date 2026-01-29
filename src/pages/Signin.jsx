@@ -19,8 +19,8 @@ const Login = () => {
 
   return (
     // pretendard 폰트 추가
-    <div className="fixed inset-0 overflow-y-auto bg-white flex items-center justify-center px-5 py-8 text-neutral-900 font-pretendard">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_14px_34px_rgba(0,0,0,0.08)] border border-black/5 px-8 py-10 sm:px-9">
+    <div className="min-h-screen bg-white flex items-center justify-center px-5 py-8 text-neutral-900 font-pretendard">
+      <div className="w-full max-w-md bg-white rounded-3xl px-8 py-10 sm:px-9">
 
       
         {/* 로고, "로그인", "실시간 낙상 감지 알리미" */}
