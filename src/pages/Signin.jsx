@@ -22,6 +22,7 @@ const Login = () => {
     <div className="min-h-screen bg-white flex items-center justify-center px-5 py-8 text-neutral-900 font-pretendard">
       <div className="w-full max-w-md bg-white rounded-3xl px-8 py-10 sm:px-9">
 
+
       
         {/* 로고, "로그인", "실시간 낙상 감지 알리미" */}
         <div className="text-center mb-7">
@@ -67,8 +68,6 @@ const Login = () => {
             </button>
           </div>
 
-
-          {/* 로그인, 회원가입 btn */}
           <button
             type="submit"
             className="mt-6 w-full h-14 rounded-2xl bg-black text-white text-[16px] font-bold hover:bg-neutral-900 active:translate-y-[1px] cursor-pointer"
@@ -80,13 +79,10 @@ const Login = () => {
         <button
           className="mt-5 mx-auto block w-fit text-[13px] font-bold text-gray-300 underline underline-offset-[6px] hover:text-gray-500 transition-colors duration-300 cursor-pointer"
           type="button"
-          onClick={() => navigate("/signup")}
         >
           회원가입
         </button>
 
-
-        {/* 리코더 코드 입력 input, 확인 btn */}
         <div className="mt-11 flex items-center gap-3">
           <input
             type="text"
