@@ -1,40 +1,71 @@
-import React from 'react'
+import React from "react";
 
 const Signup = () => {
   return (
-    <div className='flex flex-col font-pretendard justify-center items-center gap-6'>
-      <span className='mr-76 mt-30 text-3xl font-semibold'>회원가입</span>
-      
-      {/* 아이디 작성칸 */}
-      <input placeholder='사용하실 아이디를 작성해주세요' className='focus:outline-none focus:ring-0 border w-100 pl-2 py-3 rounded-xl  mt-8 border-[#AFAFAF]'/>
+    <div className="flex flex-col items-center w-full px-4 font-pretendard">
+      <span className="self-start mt-30 text-3xl font-semibold ">
+        회원가입
+      </span>
 
-      {/* 비밀번호 작성칸 */}
-      <input placeholder='사용하실 비밀번호를 작성해주세요' type='password' className='focus:outline-none focus:ring-0 border w-100 pl-2 py-3 rounded-xl border-[#AFAFAF]'/>
-      {/* 비밀번호 확인 작성칸 */}
-      <input placeholder='비밀번호를 한 번 더 작성해주세요' type='password' className='focus:outline-none focus:ring-0 border w-100 pl-2 py-3 rounded-xl border-[#AFAFAF]'/>
+      <div className="w-full max-w-md mt-10 space-y-6">
+        {/* 아이디 */}
+        <input
+          placeholder="사용하실 아이디를 작성해주세요"
+          className="w-full pl-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
+        />
 
-      {/* 이메일 작성칸 */ }
-       <div className='flex flex-row gap-1'>
-        <input placeholder='사용하실 이메일을 작성해주세요' className='focus:outline-none focus:ring-0 border w-74 pl-2 py-3 rounded-xl border-[#AFAFAF]'/>
-        <button className='text-sm  border rounded-xl px-3 bg-black text-white'>인증번호 발송</button>
-       </div>
+        {/* 비밀번호 */}
+        <input
+          type="password"
+          placeholder="사용하실 비밀번호를 작성해주세요"
+          className="w-full pl-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
+        />
+        <input
+          type="password"
+          placeholder="비밀번호를 한 번 더 작성해주세요"
+          className="w-full pl-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
+        />
 
-       { /* 인증번호 확인 */ }
-       <div className='flex flex-row gap-1'>
-        <input placeholder='인증번호를 입력해주세요' className='focus:outline-none focus:ring-0  border w-76 pl-2 py-3 rounded-xl border-[#AFAFAF]'/>
-        <button className='text-sm border rounded-xl px-5 bg-black text-white'>인증하기</button>
-       </div>
+        {/* 이메일 */}
+        <div className="flex gap-2">
+          <input
+            placeholder="사용하실 이메일을 작성해주세요"
+            className="flex-1 pl-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
+          />
+          <button className="px-4 rounded-xl bg-black text-white text-sm whitespace-nowrap">
+            인증번호 발송
+          </button>
+        </div>
 
-       { /* 주소 검색 */ }
-       <div className='flex flex-row gap-1'>
-        <input placeholder='주소를 입력해주세요' className='focus:outline-none focus:ring-0  border w-76 pl-2 py-3 rounded-xl border-[#AFAFAF]'/>
-        <button className='text-sm border rounded-xl px-5 bg-black text-white'>주소 검색</button>
-       </div>
+        {/* 인증번호 */}
+        <div className="flex gap-2">
+          <input
+            placeholder="인증번호를 입력해주세요"
+            className="flex-1 pl-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
+          />
+          <button className="px-4 rounded-xl bg-black text-white text-sm whitespace-nowrap">
+            인증하기
+          </button>
+        </div>
+
+        {/* 주소 */}
+        <div className="flex gap-2">
+          <input
+            placeholder="주소를 입력해주세요"
+            className="flex-1 pl-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
+          />
+          <button className="px-4 rounded-xl bg-black text-white text-sm whitespace-nowrap">
+            주소 검색
+          </button>
+        </div>
+      </div>
 
       {/* 완료 버튼 */}
-       <button className='focus:outline-none focus:ring-0 border px-45 rounded-xl py-2 bg-black text-white text-[20px] mt-20'>완료</button>
+      <button className="w-full max-w-md py-3 mt-16 rounded-xl bg-black text-white text-lg">
+        완료
+      </button>
     </div>
-  )
-}
+  );
+};
 
-export default Signup
+export default Signup;
