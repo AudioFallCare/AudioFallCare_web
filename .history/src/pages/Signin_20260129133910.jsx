@@ -32,8 +32,8 @@ const Login = () => {
             />
           </div>
 
-          <h1 className="text-[30px] font-[700] tracking-tight leading-none cursor-default">로그인</h1>
-          <p className="mt-3 text-[15px] font-[500] text-teal-400 cursor-default">실시간 낙상 감지 알리미</p>
+          <h1 className="text-[30px] font-[700] tracking-tight leading-none">로그인</h1>
+          <p className="mt-3 text-[15px] font-[500] text-teal-400">실시간 낙상 감지 알리미</p>
         </div>
 
 

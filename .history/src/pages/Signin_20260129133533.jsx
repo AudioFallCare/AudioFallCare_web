@@ -32,8 +32,8 @@ const Login = () => {
             />
           </div>
 
-          <h1 className="text-[30px] font-[700] tracking-tight leading-none cursor-default">로그인</h1>
-          <p className="mt-3 text-[15px] font-[500] text-teal-400 cursor-default">실시간 낙상 감지 알리미</p>
+          <h1 className="text-[30px] font-[700] tracking-tight leading-none">로그인</h1>
+          <p className="mt-3 text-[15px] font-[500] text-teal-400">실시간 낙상 감지 알리미</p>
         </div>
 
 
@@ -68,14 +68,15 @@ const Login = () => {
 
           <button
             type="submit"
-            className="mt-6 w-full h-14 rounded-2xl bg-black text-white text-[16px] font-bold hover:bg-neutral-900 active:translate-y-[1px] cursor-pointer"
+            className="mt-6 w-full h-14 rounded-2xl bg-black text-white text-[16px] font-bold hover:bg-neutral-900 active:translate-y-[1px]"
           >
             로그인
           </button>
         </form>
 
         <button
-          className="mt-5 mx-auto block w-fit text-[13px] font-bold text-gray-300 underline underline-offset-[6px] hover:text-gray-500 transition-colors duration-300 cursor-pointer"
+          className="mt-5 mx-auto block w-fit text-[13px] font-bold text-gray-300 underline underline-offset-[6px] hover:text-gray-500 transition-colors"
+          onClick={() => navigate("/signup")}
           type="button"
         >
           회원가입
@@ -91,7 +92,7 @@ const Login = () => {
           />
           <button
             type="button"
-            className="h-12 min-w-[72px] px-5 rounded-2xl bg-black text-white font-[600] hover:bg-neutral-900 active:translate-y-[1px] cursor-pointer"
+            className="h-12 min-w-[72px] px-5 rounded-2xl bg-black text-white font-[500] hover:bg-neutral-900 active:translate-y-[1px]"
           >
             확인
           </button>
