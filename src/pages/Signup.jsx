@@ -19,6 +19,12 @@ const Signup = () => {
         <button className='text-sm  border rounded-xl px-3 bg-black text-white'>인증번호 발송</button>
        </div>
 
+       { /* 인증번호 확인 */ }
+       <div className='flex flex-row gap-1'>
+        <input placeholder='인증번호를 입력해주세요' className='focus:outline-none focus:ring-0  border w-76 pl-2 py-3 rounded-xl border-[#AFAFAF]'/>
+        <button className='text-sm border rounded-xl px-5 bg-black text-white'>인증하기</button>
+       </div>
+
        { /* 주소 검색 */ }
        <div className='flex flex-row gap-1'>
         <input placeholder='주소를 입력해주세요' className='focus:outline-none focus:ring-0  border w-76 pl-2 py-3 rounded-xl border-[#AFAFAF]'/>
@@ -26,7 +32,7 @@ const Signup = () => {
        </div>
 
       {/* 완료 버튼 */}
-       <button className='focus:outline-none focus:ring-0 border px-45 rounded-xl py-2 bg-black text-white text-[20px]'>완료</button>
+       <button className='focus:outline-none focus:ring-0 border px-45 rounded-xl py-2 bg-black text-white text-[20px] mt-20'>완료</button>
     </div>
   )
 }
