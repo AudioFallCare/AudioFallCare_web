@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import LOGO from "../../public/LOGO.png";
 import EYESONME from "../../public/Eye.png";
+import { login } from "../apis/auth";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,10 +13,37 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [recorderCode, setRecorderCode] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("login", { userId, password });
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!userId || !password) {
+    alert("아이디와 비밀번호를 입력해주세요");
+    return;
+  }
+
+  try {
+    const data = await login(userId, password);
+
+    console.log("로그인 성공", data);
+
+
+    if (data?.accessToken) {
+      localStorage.setItem("accessToken", data.accessToken);
+    }
+
+    // 🔹 로그인 성공 후 이동 -> 현재 / 추후 mainpage로 바꿔야됨
+    navigate("/"); 
+
+  } catch (err) {
+    console.error("로그인 실패", err);
+
+    if (err.response?.status === 401) {
+      alert("아이디 또는 비밀번호가 틀렸습니다");
+    } else {
+      alert("로그인 중 오류가 발생했습니다");
+    }
+  }
+};
 
   return (
     // pretendard 폰트 추가
