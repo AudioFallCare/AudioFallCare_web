@@ -2,6 +2,8 @@ import Layout from './layout'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Signin from './pages/Signin'
 import Signup from './pages/Signup'
+import Guardian from './pages/Guardian'
+
 
 const App = () => {
   return (
@@ -10,6 +12,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+           <Route path="/guardian" element={<Guardian />} />
         </Routes>
       </Layout>
     </BrowserRouter>
