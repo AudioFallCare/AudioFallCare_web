@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import alarm from './../assets/alarm.png'
+import alarm from './../assets/Alarm.png'
 const Guardian = () => {
     const [nickname, setNickname] = useState("보호자 아이디") // 임시값으로 보호자 아이디
 
