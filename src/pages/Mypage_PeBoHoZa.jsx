@@ -87,7 +87,6 @@ const Mypage_PeBoHoZa = () => {
               </span>
             </div>
           ))}
-
         </div>
 
         {/* 로그아웃 버튼 */}
