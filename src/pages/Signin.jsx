@@ -107,6 +107,7 @@ const handleSubmit = async (e) => {
         <button
           className="mt-5 mx-auto block w-fit text-[13px] font-bold text-gray-300 underline underline-offset-[6px] hover:text-gray-500 transition-colors duration-300 cursor-pointer"
           type="button"
+          onClick = {() => navigate("/signup")}
         >
           회원가입
         </button>

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getFallHistories } from '../apis/auth';
 
 const Fall_LOG = () => {
 
@@ -14,29 +15,75 @@ const Fall_LOG = () => {
         ]
     };
 
-    // 낙상 기록 data
-    const fallData = {
-        fall_count: 3,
-        fall_content: [
-            {
-                id: 1,
-                date: '2026.01.27',
-                time: '16:21',
-                confidence: 97
-            },
-            {
-                id: 2,
-                date: '2026.01.26',
-                time: '08:58',
-                confidence: 40
-            },
-            {
-                id: 3,
-                date: '2026.01.01',
-                time: '01:11',
-                confidence: 20
+    // // 낙상 기록 data
+    // const fallData = {
+    //     fall_count: 3,
+    //     fall_content: [
+    //         {
+    //             id: 1,
+    //             date: '2026.01.27',
+    //             time: '16:21',
+    //             confidence: 97
+    //         },
+    //         {
+    //             id: 2,
+    //             date: '2026.01.26',
+    //             time: '08:58',
+    //             confidence: 40
+    //         },
+    //         {
+    //             id: 3,
+    //             date: '2026.01.01',
+    //             time: '01:11',
+    //             confidence: 20
+    //         }
+    //     ]
+    // };
+
+    const [fallList, setFallList] = useState([]);       // 목록 데이터
+    const [alertItem, setAlertItem] = useState(null);   // 상단 알림용 데이터
+    const [loading, setLoading] = useState(true);       // 로딩 상태
+
+    // 화면 접속 시, 바로 API 호출
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const result = await getFallHistories();
+                if (result.success && result.data) {
+                    let data = result.data;
+
+                    // 날짜 기준 정렬
+                    data.sort((a, b) => new Date(b.detectedAt) - new Date(a.detectedAt));
+                    setFallList(data);
+                    const highRisk = data.find(item => item.confidence >= 0.8);
+                    if (highRisk) {
+                        setAlertItem(highRisk);
+                    }
+                }
+            } catch (error) {
+                console.error("데이터 로딩 실패", error);
+            } finally {
+                setLoading(false);
             }
-        ]
+        };
+        fetchData();
+    }, []);
+
+    // 날짜 포맷 변환 (2026-02-04 -> 2026.02.04)
+    const formatDate = (isoString) => {
+        if (!isoString) return '-';
+        const date = new Date(isoString);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}.${mm}.${dd}`;
+    };
+
+    // 시간 포맷 변환 (2026-02-04T16:21:00... -> 16:21)
+    const formatTime = (isoString) => {
+        if (!isoString) return '-';
+        const date = new Date(isoString);
+        return date.toTimeString().substring(0, 5);
     };
 
     // 신뢰도 수치 color
@@ -92,25 +139,33 @@ const Fall_LOG = () => {
                     </div>
 
                     {/* 그리드 content */}
-                    {fallData.fall_content.map((item) => (
-                        <div key={item.id} className="flex h-12 border-b border-gray-200 last:border-none">
+                    <div className="overflow-y-auto">
+                        {fallList.length > 0 ? (
+                            fallList.map((item) => (
+                                <div key={item.id} className="flex h-12 border-b border-gray-200 last:border-none">
 
-                            {/* 날짜 */}
-                            <div className="flex-1 flex items-center justify-center border-r border-gray-200 text-sm">
-                                {item.date}
-                            </div>
+                                    {/* 날짜 */}
+                                    <div className="flex-1 flex items-center justify-center border-r border-gray-200 text-sm">
+                                        {formatDate(item.detectedAt)}
+                                    </div>
 
-                            {/* 시간 */}
-                            <div className="flex-1 flex items-center justify-center border-r border-gray-200 text-sm">
-                                {item.time}
-                            </div>
+                                    {/* 시간 */}
+                                    <div className="flex-1 flex items-center justify-center border-r border-gray-200 text-sm">
+                                        {formatTime(item.detectedAt)}
+                                    </div>
 
-                            {/* 신뢰도 */}
-                            <div className={`flex-1 flex items-center justify-center font-bold text-sm ${getConfidenceColor(item.confidence)}`}>
-                                {item.confidence}%
+                                    {/* 신뢰도 */}
+                                    <div className={`flex-1 flex items-center justify-center font-bold text-sm ${getConfidenceColor(item.confidence)}`}>
+                                        {(item.confidence * 100).toFixed(0)}%
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="flex justify-center items-center h-20 text-gray-400 text-sm">
+                                기록이 없습니다.
                             </div>
-                        </div>
-                    ))}
+                        )}
+                    </div>
 
                     {/* 아래 여백에 줄 */}
                     <div className="flex-1 flex">
