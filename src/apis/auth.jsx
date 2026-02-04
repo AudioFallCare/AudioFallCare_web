@@ -1,8 +1,42 @@
 import api from "./api";
 
+// deviceInfo (UUID) 생성 or 저장 == login 떄 사용
+const DEVICE_INFO_KEY = "deviceInfo";
+const getOrCreateDeviceInfo = () => {
+  if (typeof window === "undefined" || !window.localStorage) return "";
+
+  let deviceInfo = localStorage.getItem(DEVICE_INFO_KEY);
+  if (deviceInfo) return deviceInfo;
+
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    deviceInfo = crypto.randomUUID();
+  } else {
+    deviceInfo = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+  localStorage.setItem(DEVICE_INFO_KEY, deviceInfo);
+  return deviceInfo;
+};
+
 
 // A. 리코더 관련
 // ================================================================================================
+
+// GET : 연결된 리코더 목록 조회
+export const getRecorders = async () => {
+  try {
+    console.log("GET : 연결된 리코더 목록 조회 요청");
+    const res = await api.get("/recorders");
+    console.log("GET : 연결된 리코더 목록 조회 응답 = ", res);
+    return res.data;
+  } catch (error) {
+    console.error("리코더 목록 조회 예외 터짐 = ", error);
+    throw error;
+  }
+};
 
 // POST : 리코더 코드 등록
 export const registerRecorder = async (connectionCode) => {
@@ -15,19 +49,6 @@ export const registerRecorder = async (connectionCode) => {
     return res.data;
   } catch (error) {
     console.error("리코더 코드 등록 예외 터짐 = ", error);
-    throw error;
-  }
-};
-
-// GET : 연결된 리코더 목록 조회
-export const getRecorders = async () => {
-  try {
-    console.log("GET : 연결된 리코더 목록 조회 요청");
-    const res = await api.get("/recorders");
-    console.log("GET : 연결된 리코더 목록 조회 응답 = ", res);
-    return res.data;
-  } catch (error) {
-    console.error("리코더 목록 조회 예외 터짐 = ", error);
     throw error;
   }
 };
@@ -182,10 +203,12 @@ export const logout = async (deviceInfo) => {
 
 // POST : 로그인
 export const login = async (username, password) => {
-  console.log("POST : 로그인 요청 = ", { username, password });
+  const deviceInfo = getOrCreateDeviceInfo();
+  console.log("POST : 로그인 요청 = ", { username, password, deviceInfo });
   const res = await api.post("/auth/login", {
     username,
     password,
+    deviceInfo
   });
   console.log("POST : 로그인 응답 = ", res);
   return res.data;
