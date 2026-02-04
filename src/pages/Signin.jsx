@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import LOGO from "../../public/LOGO.png";
 import EYESONME from "../../public/Eye.png";
 import { login } from "../apis/auth";
+import { registerRecorder } from "../apis/auth";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,7 +33,8 @@ const handleSubmit = async (e) => {
     }
 
     // 🔹 로그인 성공 후 이동 -> 현재 / 추후 mainpage로 바꿔야됨
-    navigate("/"); 
+    // 네~ 해드렸습니다~
+    navigate("/mypage1"); 
 
   } catch (err) {
     console.error("로그인 실패", err);
@@ -42,6 +44,21 @@ const handleSubmit = async (e) => {
     } else {
       alert("로그인 중 오류가 발생했습니다");
     }
+  }
+};
+
+// (GET : 연결된 리코더 목록 조회) 호출
+const handleRegisterRecorder = async () => {
+  if (!recorderCode.trim()) {
+    alert("리코더 코드 입력칸이 비어있습니다");
+    return;
+  }
+
+  try {
+    const res = await registerRecorder(recorderCode.trim());
+    alert("리코더 코드 등록완");
+  } catch (e) {
+    alert("리코더 코드 등록 실패");
   }
 };
 
@@ -107,6 +124,7 @@ const handleSubmit = async (e) => {
         <button
           className="mt-5 mx-auto block w-fit text-[13px] font-bold text-gray-300 underline underline-offset-[6px] hover:text-gray-500 transition-colors duration-300 cursor-pointer"
           type="button"
+          onClick = {() => navigate("/signup")}
         >
           회원가입
         </button>
@@ -122,6 +140,7 @@ const handleSubmit = async (e) => {
           <button
             type="button"
             className="h-12 min-w-[72px] px-5 rounded-2xl bg-black text-white font-[600] hover:bg-neutral-900 active:translate-y-[1px] cursor-pointer"
+            onClick={() => handleRegisterRecorder }   // 리코더 코드 등록
           >
             확인
           </button>
