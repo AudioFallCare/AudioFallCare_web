@@ -213,12 +213,12 @@ export const login = async (username, password) => {
 
   const token = res.data?.data?.accessToken;
 
-    if (token) {
-      localStorage.setItem("accessToken", token);
-      console.log("토큰 저장 완 = ", token);
-    } else {
-      console.warn("로그인은 성공했으나 토큰이 응답에 없습니다.");
-    }
+  if (token) {
+    localStorage.setItem("accessToken", token);
+    console.log("토큰 저장 완 = ", token);
+  } else {
+    console.warn("로그인은 성공했으나 토큰이 응답에 없습니다.");
+  }
 
   console.log("POST : 로그인 응답 = ", res);
   return res.data;
@@ -285,6 +285,21 @@ export const generateConnectionCode = async () => {
     return res.data;
   } catch (error) {
     console.error("연결 코드 발급 예외 터짐 = ", error);
+    throw error;
+  }
+};
+
+// GET : 현재 사용자 연결 코드 조회
+export const getConnectionCode = async () => {
+  try {
+    console.log("GET : 연결 코드 조회 요청");
+
+    const res = await api.get("/code");
+
+    console.log("GET : 연결 코드 조회 응답 = ", res);
+    return res.data;
+  } catch (error) {
+    console.error("연결 코드 조회 예외 터짐 = ", error);
     throw error;
   }
 };
