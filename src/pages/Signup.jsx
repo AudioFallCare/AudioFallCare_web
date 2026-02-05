@@ -18,7 +18,7 @@ const Signup = () => {
     try {
       await signup();
       alert("회원가입 완료");
-      window.location.href = "/login";
+      window.location.href = "/";
     } catch (e) {
       console.error(e);
       alert("회원가입 실패");
@@ -30,7 +30,7 @@ const Signup = () => {
       <div className="w-full max-w-md mt-28">
         <h1 className="text-3xl font-semibold mb-10">회원가입</h1>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* 아이디 */}
           <input
             name="username"
@@ -48,6 +48,7 @@ const Signup = () => {
             className="w-full px-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
           />
 
+          {/* 비밀번호 확인 */}
           <input
             type="password"
             name="passwordConfirm"
@@ -55,6 +56,13 @@ const Signup = () => {
             onChange={handleChange}
             className="w-full px-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
           />
+
+          {/* 비밀번호 불일치 에러 메시지 */}
+          {errors.passwordConfirm && (
+            <p className="text-sm text-red-500 -mt-2">
+              {errors.passwordConfirm}
+            </p>
+          )}
 
           {/* 이메일 */}
           <input
@@ -81,7 +89,7 @@ const Signup = () => {
             </button>
           </div>
 
-          {/* 주소 */}
+          {/* 기본 주소 */}
           <input
             value={form.address}
             placeholder="기본 주소"

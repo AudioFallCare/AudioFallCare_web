@@ -16,30 +16,56 @@ const useSignupForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+
+    
+      if (
+        (name === "password" || name === "passwordConfirm") &&
+        next.passwordConfirm &&
+        next.password !== next.passwordConfirm
+      ) {
+        setErrors((prevErr) => ({
+          ...prevErr,
+          passwordConfirm: "비밀번호가 일치하지 않습니다.",
+        }));
+      } else if (
+        name === "password" ||
+        name === "passwordConfirm"
+      ) {
+        setErrors((prevErr) => ({
+          ...prevErr,
+          passwordConfirm: "",
+        }));
+      }
+
+      return next;
+    });
   };
 
-  /** 회원가입 */
   const signup = async () => {
     return await api.post("/auth/signup", {
       username: form.username,
       password: form.password,
       passwordConfirm: form.passwordConfirm,
       email: form.email,
-      zipcode: form.zipcode,         
+      zipcode: form.zipcode,
       address: form.address,
       addressDetail: form.addressDetail,
     });
   };
 
+  const isEmailValid = /\S+@\S+\.\S+/.test(form.email);
+
   const isFormValid =
     form.username &&
     form.password &&
     form.passwordConfirm &&
-    form.email &&
-    form.zipcode &&              
+    isEmailValid &&
+    form.zipcode &&
     form.address &&
+    form.addressDetail &&
     form.password === form.passwordConfirm;
 
   return {
