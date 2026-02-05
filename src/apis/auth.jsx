@@ -210,6 +210,16 @@ export const login = async (username, password) => {
     password,
     deviceInfo
   });
+
+  const token = res.data?.data?.accessToken;
+
+    if (token) {
+      localStorage.setItem("accessToken", token);
+      console.log("토큰 저장 완 = ", token);
+    } else {
+      console.warn("로그인은 성공했으나 토큰이 응답에 없습니다.");
+    }
+
   console.log("POST : 로그인 응답 = ", res);
   return res.data;
 };
