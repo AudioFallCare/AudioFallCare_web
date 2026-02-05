@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../apis/api";
+import { useNavigate } from 'react-router-dom';
 
 const Mypage_BoHoZa = () => {
   const [recorderCode, setRecorderCode] = useState("");
@@ -20,6 +21,24 @@ const Mypage_BoHoZa = () => {
 
     fetchRecorderCode();
   }, []);
+
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      const deviceInfo = localStorage.getItem('deviceInfo');
+      if (!deviceInfo) {
+        console.warn('deviceInfo가 로컬스토리지에 없습니다.');
+      }
+
+      await logout(deviceInfo);
+
+      localStorage.removeItem('accessToken');
+      navigate('/');
+    } catch (error) {
+      console.error('로그아웃 실패 = ', error);
+      alert('로그아웃에 실패했습니다.');
+    }
+  };
 
   return (
     <div className="w-full px-6 pt-6 flex flex-col min-h-full">
@@ -51,10 +70,15 @@ const Mypage_BoHoZa = () => {
         </div>
       )}
 
-      {/* 로그아웃 */}
-      <button className="mt-auto mb-50 text-gray-300 underline text-sm self-center">
-        로그아웃
-      </button>
+      {/* 로그아웃 버튼 */}
+      <div className="mt-auto pt-10 text-center">
+        <button
+          onClick={handleLogout}
+          className="text-gray-300 underline text-sm hover:text-gray-500 transition-colors"
+        >
+          로그아웃
+        </button>
+      </div>
     </div>
   );
 };
