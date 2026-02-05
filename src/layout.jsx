@@ -1,27 +1,26 @@
-import React from "react"
-import { useLocation } from "react-router-dom"
-import BottomNav from "./component/Bottom_Nav"
+import React from "react";
+import { useLocation } from "react-router-dom";
+import BottomNav from "./component/Bottom_Nav";
 
 const Layout = ({ children }) => {
-
   const location = useLocation();
-
-  // bottom nav 바
-  const showNavList = [
-    '/mypage1', 
-    '/mypage2', 
-    '/falllog'
-  ];
+  const showNavList = ["/mypage1", "/mypage2", "/falllog"];
   const showNav = showNavList.includes(location.pathname);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <main className="w-full max-w-[600px] bg-white min-h-screen px-4">
-        {children}
-        {showNav && <BottomNav />}
-      </main>
-    </div>
-  )
-}
+    <div className="w-full h-[100dvh] bg-gray-100 flex justify-center overflow-hidden">
+      {/* 앱 프레임 */}
+      <div className="relative w-full max-w-[430px] h-full bg-white flex flex-col">
+        {/* 실제 페이지 내용 */}
+        <div className="flex-1 overflow-y-auto pb-[84px]">
+          {children}
+        </div>
 
-export default Layout
+        {/* BottomNav */}
+        {showNav && <BottomNav />}
+      </div>
+    </div>
+  );
+};
+
+export default Layout;
