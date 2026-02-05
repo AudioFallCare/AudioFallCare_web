@@ -6,12 +6,8 @@ const Signup = () => {
   const {
     form,
     errors,
-    emailSent,
-    emailVerified,
     isFormValid,
     handleChange,
-    sendEmailCode,
-    verifyEmailCode,
     signup,
     setForm,
   } = useSignupForm();
@@ -23,7 +19,8 @@ const Signup = () => {
       await signup();
       alert("회원가입 완료");
       window.location.href = "/login";
-    } catch {
+    } catch (e) {
+      console.error(e);
       alert("회원가입 실패");
     }
   };
@@ -60,82 +57,55 @@ const Signup = () => {
           />
 
           {/* 이메일 */}
-          <div>
-            <div className="flex gap-2">
-              <input
-                name="email"
-                placeholder="사용하실 이메일을 작성해주세요"
-                onChange={handleChange}
-                className="flex-1 px-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
-              />
-              <button
-              type="button"
-                onClick={sendEmailCode}
-                className="w-28 rounded-xl bg-black text-white text-sm whitespace-nowrap"
-              >
-                인증번호 발송
-              </button>
-            </div>
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-            )}
-          </div>
+          <input
+            name="email"
+            placeholder="사용하실 이메일을 작성해주세요"
+            onChange={handleChange}
+            className="w-full px-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
+          />
 
-          {/* 인증번호 */}
-          {emailSent && (
-            <div>
-              <div className="flex gap-2">
-                <input
-                  name="emailCode"
-                  placeholder="인증번호를 입력해주세요"
-                  onChange={handleChange}
-                  className="flex-1 px-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
-                />
-                <button
-                type="button"
-                  onClick={verifyEmailCode}
-                  className="w-28 rounded-xl bg-black text-white text-sm whitespace-nowrap"
-                >
-                  인증하기
-                </button>
-              </div>
-
-              {errors.emailCode && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.emailCode}
-                </p>
-              )}
-
-              {emailVerified && (
-                <p className="mt-1 text-sm text-green-500">
-                  이메일 인증이 완료되었습니다.
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* 주소 */}
+          {/* 우편번호 + 주소 검색 */}
           <div className="flex gap-2">
             <input
-              value={form.address}
-              placeholder="주소를 입력해주세요"
+              value={form.zipcode}
+              placeholder="우편번호"
               readOnly
-              className="flex-1 px-3 py-3 border border-[#AFAFAF] rounded-xl bg-gray-50"
+              className="w-32 px-3 py-3 border border-[#AFAFAF] rounded-xl bg-gray-50"
             />
             <button
-            type="button"
+              type="button"
               onClick={() => setOpenAddress(true)}
-              className="w-28 rounded-xl bg-black text-white text-sm whitespace-nowrap"
+              className="flex-1 rounded-xl bg-black text-white text-sm whitespace-nowrap"
             >
-              주소 검색
+              우편번호 검색
             </button>
           </div>
+
+          {/* 주소 */}
+          <input
+            value={form.address}
+            placeholder="기본 주소"
+            readOnly
+            className="w-full px-3 py-3 border border-[#AFAFAF] rounded-xl bg-gray-50"
+          />
+
+          {/* 상세 주소 */}
+          <input
+            name="addressDetail"
+            placeholder="상세 주소를 입력해주세요"
+            onChange={handleChange}
+            className="w-full px-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
+          />
 
           {openAddress && (
             <div className="border rounded-xl p-2">
               <AddressSearch
-                onSelect={(addr) => {
-                  setForm((prev) => ({ ...prev, address: addr }));
+                onSelect={({ zipcode, address }) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    zipcode,
+                    address,
+                  }));
                   setOpenAddress(false);
                 }}
               />
