@@ -32,8 +32,6 @@ const handleSubmit = async (e) => {
       localStorage.setItem("accessToken", data.accessToken);
     }
 
-    // 🔹 로그인 성공 후 이동 -> 현재 / 추후 mainpage로 바꿔야됨
-    // 네~ 해드렸습니다~
     navigate("/mypage1"); 
 
   } catch (err) {
@@ -47,7 +45,6 @@ const handleSubmit = async (e) => {
   }
 };
 
-// (GET : 연결된 리코더 목록 조회) 호출
 const handleRegisterRecorder = async () => {
   if (!recorderCode.trim()) {
     alert("리코더 코드 입력칸이 비어있습니다");
@@ -56,6 +53,7 @@ const handleRegisterRecorder = async () => {
 
   try {
     const res = await registerRecorder(recorderCode.trim());
+    localStorage.setItem("accessToken", res.data.data.accessToken);
     alert("리코더 코드 등록완");
   } catch (e) {
     alert("리코더 코드 등록 실패");
@@ -63,7 +61,7 @@ const handleRegisterRecorder = async () => {
 };
 
   return (
-    // pretendard 폰트 추가
+    
     <div className="min-h-screen bg-white flex items-center justify-center px-5 py-8 text-neutral-900 font-pretendard">
       <div className="w-full max-w-md bg-white rounded-3xl px-8 py-10 sm:px-9">
 

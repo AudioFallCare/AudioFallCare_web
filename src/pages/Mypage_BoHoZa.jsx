@@ -1,57 +1,60 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import api from "../apis/api";
 
 const Mypage_BoHoZa = () => {
-  const userData = {
-    username: "고앵이",
-    email: "meow@email.com",
-    recorderCode: "25252"
-  };
+  const [recorderCode, setRecorderCode] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchRecorderCode = async () => {
+      try {
+        const res = await api.get("/code");
+        setRecorderCode(res.data.data.code);
+      } catch (e) {
+        setError("연결 코드를 불러오지 못했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecorderCode();
+  }, []);
 
   return (
-    <div className="fixed inset-0 w-full bg-white flex flex-col">
+    <div className="w-full px-6 pt-6 flex flex-col min-h-full">
+      {/* Header */}
+      <div className="w-full border-b-2 border-black py-4 text-center font-bold text-lg">
+        마이페이지
+      </div>
 
-        {/* Header */}
-        <header className="relative flex justify-center items-center py-5 border-b-2 border-black bg-white z-10">
-          <h1 className="text-xl font-bold text-black">마이페이지</h1>
-        </header>
+      {/* Content */}
+      {loading && (
+        <p className="mt-10 text-sm text-gray-400">연결 코드 불러오는 중...</p>
+      )}
 
-        {/* 리코더 코드, email */}
-        <main className="flex-1 px-6 pt-8 flex flex-col pb-24 overflow-y-auto">
-          
-          <div className="mb-1">
-            <span className="text-lg font-bold text-black block">
-              {userData.username}님의 리코더 코드는
-            </span>
-          </div>
+      {error && (
+        <p className="mt-10 text-sm text-red-500">{error}</p>
+      )}
 
-          <div className="mb-4">
-            <span className="text-sm text-gray-400">
-              {userData.email}
-            </span>
-          </div>
+      {!loading && !error && (
+        <div className="mt-10">
+          <p className="text-sm text-gray-500 mb-1">
+            사용자의 리코더 코드는
+          </p>
+          <p className="text-2xl font-bold mb-2">
+            {recorderCode} 입니다
+          </p>
+          <p className="text-sm text-gray-400">
+            해당 코드를 리코더 기기에 입력해주세요
+          </p>
+        </div>
+      )}
 
-          <div className="mb-2">
-            <span className="text-4xl font-bold text-black mr-2">
-              {userData.recorderCode}
-            </span>
-            <span className="text-xl font-normal text-black">
-              입니다
-            </span>
-          </div>
-
-          <div>
-            <span className="text-sm text-gray-400">
-              해당 코드를 전달해주세요
-            </span>
-          </div>
-
-          {/* 로그아웃 버튼 */}
-          <div className="mt-auto pt-10 text-center">
-            <button className="text-gray-300 underline text-sm hover:text-gray-500 transition-colors">
-              로그아웃
-            </button>
-          </div>
-        </main>
+      {/* 로그아웃 */}
+      <button className="mt-auto mb-50 text-gray-300 underline text-sm self-center">
+        로그아웃
+      </button>
     </div>
   );
 };
