@@ -140,34 +140,21 @@ export const registerFcmToken = async ({ token, deviceInfo }) => {
 // ================================================================================================
 
 // POST : 회원가입
-export const signup = async ({
-  username,
-  password,
-  passwordConfirm,
-  zipcode,
-  address,
-  addressDetail,
-}) => {
-  try {
-    const body = {
-      username,
-      password,
-      passwordConfirm,
-      zipcode,
-      address,
-      addressDetail,
-    };
-    console.log("POST : 회원가입 요청 = ", body);
+export const signup = async (data) => {
+  const payload = {
+    ...data,
+    zipcode: data.zipcode ? Number(data.zipcode) : null,
+  };
 
-    const res = await api.post("/auth/signup", body);
+  const res = await api.post("/auth/signup", payload, {
+    headers: {
+      Authorization: undefined,
+    },
+  });
 
-    console.log("POST : 회원가입 응답 = ", res);
-    return res.data;
-  } catch (error) {
-    console.error("회원가입 예외 터짐 = ", error);
-    throw error;
-  }
+  return res.data;
 };
+
 
 // POST : 토큰 재발급
 export const refreshToken = async (deviceInfo) => {

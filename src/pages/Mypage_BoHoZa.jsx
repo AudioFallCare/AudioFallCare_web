@@ -92,8 +92,31 @@ const Mypage_BoHoZa = () => {
     navigate("/");
   };
 
-  if (loading) return <div>로딩중...</div>;
-  if (!recorder) return <div>연결된 리코더 없음</div>;
+ if (recorders.length === 0 && recorderCode) {
+  return (
+    <div className="w-full px-6 pt-6 flex flex-col min-h-full">
+      <div className="border-b-2 border-black py-4 text-center font-bold">
+        마이페이지
+      </div>
+
+      <p className="mt-10 text-center font-semibold">
+        사용자의 리코더 코드는
+      </p>
+      <p className="mt-2 text-center text-xl font-bold">
+        {recorderCode}
+      </p>
+
+      <p className="mt-4 text-center text-gray-400 text-sm">
+        해당 코드를 리코더에 입력해주세요.
+      </p>
+    </div>
+  );
+}
+
+
+if (!recorder) {
+  return <div>리코더 정보 불러오기 실패</div>;
+}
 
   return (
     <div className="w-full px-6 pt-6 flex flex-col min-h-full">
