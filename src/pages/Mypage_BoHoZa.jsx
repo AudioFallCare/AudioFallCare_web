@@ -39,8 +39,6 @@ const Mypage_BoHoZa = () => {
             selected = list.find((r) => r.status === "CONNECTED") || list[0];
           }
 
-          console.log("✅ 최종 선택된 리코더 =", selected);
-
           setRecorder(selected);
           setDeviceName(selected?.deviceName || "");
 
@@ -92,76 +90,118 @@ const Mypage_BoHoZa = () => {
     navigate("/");
   };
 
- if (recorders.length === 0 && recorderCode) {
+  if (recorders.length === 0 && recorderCode) {
+    return (
+      <div className="w-full px-6 pt-6 flex flex-col min-h-full">
+        <div className="border-b-2 border-black py-4 text-center font-bold">
+          마이페이지
+        </div>
+
+        <p className="mt-10 text-center font-semibold">
+          사용자의 리코더 코드는
+        </p>
+        <p className="mt-2 text-center text-xl font-bold">{recorderCode}</p>
+
+        <p className="mt-4 text-center text-gray-400 text-sm">
+          해당 코드를 리코더에 입력해주세요.
+        </p>
+      </div>
+    );
+  }
+
+  if (!recorder) {
+    return <div>리코더 정보 불러오기 실패</div>;
+  }
+
+  const isCustomName =
+    recorder.deviceName && recorder.deviceName !== recorderCode;
+
   return (
-    <div className="w-full px-6 pt-6 flex flex-col min-h-full">
-      <div className="border-b-2 border-black py-4 text-center font-bold">
+    <div className="w-full min-h-screen bg-white flex flex-col">
+      <div className="border-b border-black py-4 text-center text-lg font-bold">
         마이페이지
       </div>
 
-      <p className="mt-10 text-center font-semibold">
-        사용자의 리코더 코드는
-      </p>
-      <p className="mt-2 text-center text-xl font-bold">
-        {recorderCode}
-      </p>
+      <div className="px-6 pt-8 flex flex-col flex-1">
+        <p className="font-semibold text-base">
+          {username}님의 지인이 설정되었습니다.
+        </p>
 
-      <p className="mt-4 text-center text-gray-400 text-sm">
-        해당 코드를 리코더에 입력해주세요.
-      </p>
-    </div>
-  );
-}
+        <p className="mt-1 text-sm text-gray-400">
+          {isCustomName
+            ? `‘${recorder.deviceName}’의 알림이 옵니다.`
+            : "리코더코드 or 수정된 이름의 알림이 옵니다."}
+        </p>
 
+        <div className="flex items-center gap-2 mt-4">
+          {isEditing ? (
+            <>
+              <input
+                value={deviceName}
+                onChange={(e) => setDeviceName(e.target.value)}
+                className="flex-1 rounded-full border px-4 py-2 text-sm outline-none"
+              />
+              <button
+                onClick={handleUpdateDeviceName}
+                className="text-sm font-semibold"
+              >
+                완료
+              </button>
+            </>
+          ) : (
+            <>
+              <input
+                disabled
+                value={isCustomName ? recorder.deviceName : recorderCode}
+                className="flex-1 rounded-full border px-4 py-2 text-sm bg-gray-100 text-gray-700"
+              />
+              <button
+                onClick={() => setIsEditing(true)}
+                className="text-sm font-semibold"
+              >
+                수정
+              </button>
+            </>
+          )}
+        </div>
 
-if (!recorder) {
-  return <div>리코더 정보 불러오기 실패</div>;
-}
+        <p className="mt-4 text-sm font-bold">
+          리코더 주소 : {recorderCode}
+        </p>
 
-  return (
-    <div className="w-full px-6 pt-6 flex flex-col min-h-full">
-      <div className="border-b-2 border-black py-4 text-center font-bold">
-        마이페이지
+        <div className="mt-8 space-y-4">
+          <div
+            className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3 cursor-pointer active:scale-95 transition"
+            onClick={() => navigate("/falllog")}
+          >
+            <div className="w-8 h-8 flex items-center justify-center rounded-full border border-red-400 text-red-500 font-bold">
+              i
+            </div>
+            <p className="text-sm">
+              최근 감지된 낙상이 {recentFallCount}건 있습니다
+            </p>
+          </div>
+
+          <div className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3">
+            <div className="w-8 h-8 flex items-center justify-center rounded-full border border-red-400 text-red-500 font-bold">
+              i
+            </div>
+            <p className="text-sm">이번달 낙상횟수가 지난달보다 더 많습니다</p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="mt-auto mb-6 text-gray-300 text-sm underline"
+        >
+          로그아웃
+        </button>
       </div>
 
-      <p className="mt-6 font-semibold">
-        {username}님의 지인이 설정되었습니다.
-      </p>
-
-      <p className="text-sm text-gray-400">
-        {recorder.deviceName
-          ? `‘${recorder.deviceName}’의 알림이 옵니다.`
-          : "리코더 주소 기준으로 알림이 옵니다."}
-      </p>
-
-      <div className="flex gap-2 mt-3">
-        {isEditing ? (
-          <>
-            <input
-              value={deviceName}
-              onChange={(e) => setDeviceName(e.target.value)}
-              className="border px-2 py-1 flex-1"
-            />
-            <button onClick={handleUpdateDeviceName}>완료</button>
-          </>
-        ) : (
-          <>
-            <input
-              disabled
-              value={recorder.deviceName || recorderCode}
-              className="border px-2 py-1 flex-1 bg-gray-100"
-            />
-            <button onClick={() => setIsEditing(true)}>수정</button>
-          </>
-        )}
+      <div className="border-t h-14 flex items-center justify-center gap-16 text-gray-400">
+        <div className="text-red-500">🏠</div>
+        <div>📊</div>
       </div>
-
-      <p className="mt-3 font-bold">리코더 주소 : {recorderCode}</p>
-      <div className="mt-6">최근 감지된 낙상 {recentFallCount}건</div>
-
-      <button onClick={handleLogout} className="mt-auto underline text-sm">
-        로그아웃
-      </button>
     </div>
   );
 };

@@ -12,7 +12,7 @@ const BottomNav = () => {
     <nav className="absolute bottom-10 left-0 w-full h-[120px] border-t border-gray-300 bg-white z-50">
       <div className="h-full flex items-center justify-around pb-2">
         {/* 왼쪽 버튼 (mypage2) */}
-        <Link to="/mypage2" className="p-2">
+        <Link to="/mypage1" className="p-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -21,7 +21,7 @@ const BottomNav = () => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={`w-8 h-8 ${getIconColor("/mypage2")}`}
+            className={`w-8 h-8 ${getIconColor("/mypage1")}`}
           >
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
