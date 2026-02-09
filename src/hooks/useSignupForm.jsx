@@ -65,7 +65,6 @@ const useSignupForm = () => {
     isEmailValid &&
     form.zipcode &&
     form.address &&
-    form.addressDetail &&
     form.password === form.passwordConfirm;
 
   return {
