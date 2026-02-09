@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getFallHistories } from '../apis/auth';
+import { getFallHistories, getAlerts } from '../apis/auth';
 
 const Fall_LOG = () => {
-
-    // alert 데이터
-    const fallalertData = {
-        fall_alert_count: 1,
-        fall_alert_content: [
-            {
-                id: 1,
-                content: "2026.01.26에 높은 신뢰도의 낙상 감지!"
-            }
-        ]
-    };
 
     // // 낙상 기록 data
     // const fallData = {
@@ -48,24 +37,43 @@ const Fall_LOG = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await getFallHistories();
-                if (result.success && result.data) {
-                    let data = result.data;
-
-                    // 날짜 기준 정렬
+                // 1) 낙상 기록 조회
+                const historiesRes = await getFallHistories();
+                if (historiesRes?.success && Array.isArray(historiesRes.data)) {
+                    const data = [...historiesRes.data];
+                    // 날짜 기준 정렬(최신순)
                     data.sort((a, b) => new Date(b.detectedAt) - new Date(a.detectedAt));
                     setFallList(data);
-                    const highRisk = data.find(item => item.confidence >= 0.8);
-                    if (highRisk) {
-                        setAlertItem(highRisk);
+                } else {
+                    setFallList([]);
+                }
+
+                // 2) 알림 조회 -> type === 'FALL' 중 최신 1개만
+                const alertsRes = await getAlerts();
+                const alerts = alertsRes?.data;
+
+                if (alertsRes?.success && Array.isArray(alerts)) {
+                    const fallAlerts = alerts.filter((a) => a?.type === 'FALL');
+
+                    if (fallAlerts.length > 0) {
+                        // 서버에서 createdAt 같은 시간이 없으면 id가 큰 것을 최신으로 가정
+                        fallAlerts.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+                        setAlertItem(fallAlerts[0]);
+                    } else {
+                        setAlertItem(null);
                     }
+                } else {
+                    setAlertItem(null);
                 }
             } catch (error) {
-                console.error("데이터 로딩 실패", error);
+                console.error('데이터 로딩 실패', error);
+                setFallList([]);
+                setAlertItem(null);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchData();
     }, []);
 
@@ -105,10 +113,9 @@ const Fall_LOG = () => {
             <main className="flex-1 px-6 flex flex-col pb-24 overflow-y-auto">
 
                 {/* alert 상단 */}
-                <div className="mb-6 space-y-4">
-                    {fallalertData.fall_alert_content.map((item) => (
+                {alertItem && (
+                    <div className="mb-6">
                         <div
-                            key={item.id}
                             className="w-full bg-white rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.15)] border border-gray-100 px-4 py-2.5 flex items-center"
                         >
                             {/* 아이콘 박스 */}
@@ -120,11 +127,11 @@ const Fall_LOG = () => {
 
                             {/* 알림 내용 */}
                             <span className="text-gray-600 text-sm font-medium">
-                                {item.content}
+                                {alertItem.message}
                             </span>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                )}
 
 
                 {/* 그리드 표 */}

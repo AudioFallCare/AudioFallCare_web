@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../apis/api";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../apis/auth";
+import { logout, getAlerts } from "../apis/auth";
 
 const Mypage_BoHoZa = () => {
   const navigate = useNavigate();
@@ -151,35 +151,20 @@ const Mypage_BoHoZa = () => {
               alerts.map((item) => (
                 <div
                   key={item.id}
-                  className="w-full bg-white rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.15)] border border-gray-100 p-5 flex items-center"
+                  className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3 transition"
                 >
-                  {/* 박스 */}
-                  <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                      className="w-6 h-6 text-red-400"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                      />
-                    </svg>
+                  <div className="w-8 h-8 min-w-8 min-h-8 flex-shrink-0 flex items-center justify-center rounded-full border border-red-400 text-red-500 font-bold">
+                    i
                   </div>
 
-                  {/* 내용 */}
-                  <span className="text-gray-600 text-sm">
+                  <p className="text-sm text-gray-600">
                     {item.message || "알림"}
                     {item.createdAt ? (
                       <span className="ml-2 text-xs text-gray-400">
                         ({formatAlertTime(item.createdAt)})
                       </span>
                     ) : null}
-                  </span>
+                  </p>
                 </div>
               ))
             )}
@@ -250,26 +235,7 @@ const Mypage_BoHoZa = () => {
           리코더 주소 : {recorderCode}
         </p>
 
-        <div className="mt-8 space-y-4">
-          <div
-            className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3 cursor-pointer active:scale-95 transition"
-            onClick={() => navigate("/falllog")}
-          >
-            <div className="w-8 h-8 flex items-center justify-center rounded-full border border-red-400 text-red-500 font-bold">
-              i
-            </div>
-            <p className="text-sm">
-              최근 감지된 낙상이 {recentFallCount}건 있습니다
-            </p>
-          </div>
-
-          <div className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3">
-            <div className="w-8 h-8 flex items-center justify-center rounded-full border border-red-400 text-red-500 font-bold">
-              i
-            </div>
-            <p className="text-sm">이번달 낙상횟수가 지난달보다 더 많습니다</p>
-          </div>
-        </div>
+        {/* Removed the two hard-coded alert cards here */}
 
         {/* 알림 */}
         <div className="mt-6">
@@ -282,35 +248,20 @@ const Mypage_BoHoZa = () => {
               alerts.map((item) => (
                 <div
                   key={item.id}
-                  className="w-full bg-white rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.15)] border border-gray-100 p-5 flex items-center"
+                  className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3 transition"
                 >
-                  {/* 박스 */}
-                  <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                      className="w-6 h-6 text-red-400"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                      />
-                    </svg>
+                  <div className="w-8 h-8 min-w-8 min-h-8 flex-shrink-0 flex items-center justify-center rounded-full border border-red-400 text-red-500 font-bold">
+                    i
                   </div>
 
-                  {/* 내용 */}
-                  <span className="text-gray-600 text-sm">
+                  <p className="text-sm text-gray-600">
                     {item.message || "알림"}
                     {item.createdAt ? (
                       <span className="ml-2 text-xs text-gray-400">
                         ({formatAlertTime(item.createdAt)})
                       </span>
                     ) : null}
-                  </span>
+                  </p>
                 </div>
               ))
             )}

@@ -21,6 +21,13 @@ const Login = () => {
       return;
     }
 
+    const requestBody = {
+      userId: userId,
+      password: password,
+    };
+
+    console.log(" [로그인 요청] 전송 데이터:", requestBody);
+
     try {
       const data = await login(userId, password);
       console.log("로그인 성공", data);
@@ -43,16 +50,16 @@ const Login = () => {
     }
 
     try {
-        const res = await registerRecorder(recorderCode.trim());
+      const res = await registerRecorder(recorderCode.trim());
 
- const recorderId = res?.data?.id;  
-   console.log("등록된 recorderId =", recorderId);
+      const recorderId = res?.data?.id;
+      console.log("등록된 recorderId =", recorderId);
 
-   if (recorderId) {
-     localStorage.setItem("recorderId", recorderId);
-   }
+      if (recorderId) {
+        localStorage.setItem("recorderId", recorderId);
+      }
       alert("리코더 코드 등록 완료");
-      navigate("/mypage2"); 
+      navigate("/mypage2");
     } catch (e) {
       console.error(e);
       alert("리코더 코드 등록 실패");
@@ -130,7 +137,7 @@ const Login = () => {
           <button
             type="button"
             className="h-12 min-w-[72px] px-5 rounded-2xl bg-black text-white font-[600]"
-            onClick={handleRegisterRecorder}   
+            onClick={handleRegisterRecorder}
           >
             확인
           </button>
