@@ -4,7 +4,7 @@ import BottomNav from "./component/Bottom_Nav";
 
 const Layout = ({ children }) => {
   const location = useLocation();
-  const showNavList = ["/mypage1", "/mypage2", "/falllog"];
+  const showNavList = ["/mypage1", "/falllog"];
   const showNav = showNavList.includes(location.pathname);
 
   return (
