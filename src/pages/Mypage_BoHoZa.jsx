@@ -14,6 +14,23 @@ const Mypage_BoHoZa = () => {
   const [deviceName, setDeviceName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [recentFallCount, setRecentFallCount] = useState(0);
+  const [alerts, setAlerts] = useState([]);
+
+  const formatAlertTime = (isoString) => {
+    if (!isoString) return "";
+    try {
+      const d = new Date(isoString);
+      if (Number.isNaN(d.getTime())) return "";
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      const hh = String(d.getHours()).padStart(2, "0");
+      const mi = String(d.getMinutes()).padStart(2, "0");
+      return `${yyyy}.${mm}.${dd} ${hh}:${mi}`;
+    } catch {
+      return "";
+    }
+  };
 
   const fetchRecorders = async () => {
     const res = await api.get("/recorders");
@@ -51,6 +68,21 @@ const Mypage_BoHoZa = () => {
 
         const statsRes = await api.get("/histories/stats");
         setRecentFallCount(statsRes?.data?.data?.recentWeekCount || 0);
+
+        // 알림 목록 조회
+        try {
+          const alertRes = await getAlerts();
+          const alertList = Array.isArray(alertRes?.data)
+            ? alertRes.data
+            : Array.isArray(alertRes?.data?.data)
+              ? alertRes.data.data
+              : [];
+
+          setAlerts(alertList);
+        } catch (err) {
+          console.error("알림 목록 조회 실패", err);
+          setAlerts([]);
+        }
       } catch (e) {
         console.error("마이페이지 데이터 조회 실패", e);
       } finally {
@@ -100,14 +132,63 @@ const Mypage_BoHoZa = () => {
         <p className="mt-10 text-center font-semibold">
           사용자의 리코더 코드는
         </p>
-        <p className="mt-2 text-center text-xl font-bold">{recorderCode}</p>
+        <p className="mt-2 text-center text-xl font-bold">
+          {recorderCode}
+        </p>
 
         <p className="mt-4 text-center text-gray-400 text-sm">
           해당 코드를 리코더에 입력해주세요.
         </p>
+
+        {/* 알림 */}
+        <div className="mt-10">
+          <p className="font-bold mb-3">알림</p>
+
+          <div className="space-y-6">
+            {alerts.length === 0 ? (
+              <div className="text-sm text-gray-400">표시할 알림이 없습니다.</div>
+            ) : (
+              alerts.map((item) => (
+                <div
+                  key={item.id}
+                  className="w-full bg-white rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.15)] border border-gray-100 p-5 flex items-center"
+                >
+                  {/* 박스 */}
+                  <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      className="w-6 h-6 text-red-400"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* 내용 */}
+                  <span className="text-gray-600 text-sm">
+                    {item.message || "알림"}
+                    {item.createdAt ? (
+                      <span className="ml-2 text-xs text-gray-400">
+                        ({formatAlertTime(item.createdAt)})
+                      </span>
+                    ) : null}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </div>
     );
   }
+
 
   if (!recorder) {
     return <div>리코더 정보 불러오기 실패</div>;
@@ -187,6 +268,52 @@ const Mypage_BoHoZa = () => {
               i
             </div>
             <p className="text-sm">이번달 낙상횟수가 지난달보다 더 많습니다</p>
+          </div>
+        </div>
+
+        {/* 알림 */}
+        <div className="mt-6">
+          <p className="font-bold mb-3">알림</p>
+
+          <div className="space-y-6">
+            {alerts.length === 0 ? (
+              <div className="text-sm text-gray-400">표시할 알림이 없습니다.</div>
+            ) : (
+              alerts.map((item) => (
+                <div
+                  key={item.id}
+                  className="w-full bg-white rounded-2xl shadow-[0_4px_14px_rgba(0,0,0,0.15)] border border-gray-100 p-5 flex items-center"
+                >
+                  {/* 박스 */}
+                  <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      className="w-6 h-6 text-red-400"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* 내용 */}
+                  <span className="text-gray-600 text-sm">
+                    {item.message || "알림"}
+                    {item.createdAt ? (
+                      <span className="ml-2 text-xs text-gray-400">
+                        ({formatAlertTime(item.createdAt)})
+                      </span>
+                    ) : null}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
