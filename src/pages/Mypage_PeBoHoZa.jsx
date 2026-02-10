@@ -354,7 +354,7 @@ const Mypage_PeBoHoZa = () => {
         <p className="mt-4 text-sm text-gray-700 text-center whitespace-pre-wrap">
           {wsResultText}
         </p>
-      ) : <p> 결과 대기 중 </p>}
+      ) : <p></p>}
     </div>
   );
 };
