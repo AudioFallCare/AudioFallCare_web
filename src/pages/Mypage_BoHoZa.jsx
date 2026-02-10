@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../apis/api";
 import { useNavigate } from "react-router-dom";
 import { logout, getAlerts } from "../apis/auth";
+import { getFallDiff } from "../apis/auth";
 
 const Mypage_BoHoZa = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Mypage_BoHoZa = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [recentFallCount, setRecentFallCount] = useState(0);
   const [alerts, setAlerts] = useState([]);
+const [fallDiff, setFallDiff] = useState(null);
 
   const formatAlertTime = (isoString) => {
     if (!isoString) return "";
@@ -39,59 +41,84 @@ const Mypage_BoHoZa = () => {
 
   useEffect(() => {
     const fetchMyPageData = async () => {
-      try {
-        const list = await fetchRecorders();
-        setRecorders(list);
+     try {
+  const list = await fetchRecorders();
+  setRecorders(list);
 
-        if (list.length > 0) {
-          const savedId = localStorage.getItem("selectedRecorderId");
+  if (list.length > 0) {
+    const savedId = localStorage.getItem("selectedRecorderId");
 
-          let selected = null;
+    let selected = null;
 
-          if (savedId) {
-            selected = list.find((r) => String(r.id) === savedId);
-          }
+    if (savedId) {
+      selected = list.find((r) => String(r.id) === savedId);
+    }
 
-          if (!selected) {
-            selected = list.find((r) => r.status === "CONNECTED") || list[0];
-          }
+    if (!selected) {
+      selected = list.find((r) => r.status === "CONNECTED") || list[0];
+    }
 
-          setRecorder(selected);
-          setDeviceName(selected?.deviceName || "");
+    setRecorder(selected);
+    setDeviceName(selected?.deviceName || "");
 
-          const userRes = await api.get(`/recorders/${selected.id}/user`);
-          setUsername(userRes?.data?.data?.username || "");
-        }
+    const userRes = await api.get(`/recorders/${selected.id}/user`);
+    setUsername(userRes?.data?.data?.username || "");
+  }
 
-        const codeRes = await api.get("/code");
-        setRecorderCode(codeRes?.data?.data?.code || "");
+  const codeRes = await api.get("/code");
+  setRecorderCode(codeRes?.data?.data?.code || "");
 
-        const statsRes = await api.get("/histories/stats");
-        setRecentFallCount(statsRes?.data?.data?.recentWeekCount || 0);
+  const statsRes = await api.get("/histories/stats");
+  setRecentFallCount(statsRes?.data?.data?.recentWeekCount || 0);
 
-        // 알림 목록 조회
-        try {
-          const alertRes = await getAlerts();
-          const alertList = Array.isArray(alertRes?.data)
-            ? alertRes.data
-            : Array.isArray(alertRes?.data?.data)
-              ? alertRes.data.data
-              : [];
+  // 🔽 낙상 빈도 비교 API 추가
+  try {
+    const diffRes = await getFallDiff();
+    setFallDiff(diffRes?.data?.data);  // "INCREASE" | "DECREASE" | "SAME"
+  } catch (e) {
+    console.error("낙상 빈도 비교 조회 실패", e);
+    setFallDiff(null);
+  }
 
-          setAlerts(alertList);
-        } catch (err) {
-          console.error("알림 목록 조회 실패", err);
-          setAlerts([]);
-        }
-      } catch (e) {
-        console.error("마이페이지 데이터 조회 실패", e);
-      } finally {
-        setLoading(false);
-      }
+  // 🔽 낙상 빈도 비교 API 추가
+try {
+  const diffRes = await getFallDiff();
+  console.log("낙상 빈도 응답 = ", diffRes);
+
+  setFallDiff(diffRes?.data);  // ✅ 여기 수정
+} catch (e) {
+  console.error("낙상 빈도 비교 조회 실패", e);
+  setFallDiff(null);
+}
+
+
+  // 🔽 알림 목록 조회
+  try {
+    const alertRes = await getAlerts();
+    const alertList = Array.isArray(alertRes?.data)
+      ? alertRes.data
+      : Array.isArray(alertRes?.data?.data)
+      ? alertRes.data.data
+      : [];
+
+    setAlerts(alertList.slice(0, 4));
+  } catch (err) {
+    console.error("알림 목록 조회 실패", err);
+    setAlerts([]);
+  }
+
+} catch (e) {
+  console.error("마이페이지 데이터 조회 실패", e);
+} finally {
+  setLoading(false);
+}
+
     };
 
     fetchMyPageData();
   }, []);
+
+  
 
   const handleUpdateDeviceName = async () => {
     if (!recorder) return;
@@ -235,6 +262,18 @@ const Mypage_BoHoZa = () => {
           리코더 주소 : {recorderCode}
         </p>
 
+        {fallDiff ? (
+  <p className="mt-1 text-sm inline-block text-[#9b9b9b] py-1 rounded">
+    {fallDiff === "INCREASE" && "지난달 대비 낙상 빈도가 증가했어요"}
+    {fallDiff === "DECREASE" && "지난달 대비 낙상 빈도가 감소했어요"}
+    {fallDiff === "SAME" && "지난달과 동일해요"}
+  </p>
+) : (
+  <p className="mt-1 text-xs text-gray-400">
+    낙상 빈도 분석 중...
+  </p>
+)}
+
         {/* Removed the two hard-coded alert cards here */}
 
         {/* 알림 */}
@@ -270,15 +309,10 @@ const Mypage_BoHoZa = () => {
 
         <button
           onClick={handleLogout}
-          className="mt-auto mb-6 text-gray-300 text-sm underline"
+          className="mt-auto mb-25 text-gray-300 text-sm underline"
         >
           로그아웃
         </button>
-      </div>
-
-      <div className="border-t h-14 flex items-center justify-center gap-16 text-gray-400">
-        <div className="text-red-500">🏠</div>
-        <div>📊</div>
       </div>
     </div>
   );

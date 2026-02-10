@@ -402,3 +402,15 @@ export const getUnreadAlertCount = async () => {
     throw error;
   }
 }
+
+export const getFallDiff = async () => {
+  try {
+    console.log("GET : 지난달 대비 낙상 빈도 비교 요청");
+    const res = await api.get("/alerts/fall-diff");
+    console.log("GET : 지난달 대비 낙상 빈도 비교 응답 = ", res);
+    return res.data;
+  } catch (error) {
+    console.error("낙상 빈도 비교 조회 실패 = ", error);
+    throw error;
+  }
+};

@@ -67,11 +67,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-5 py-8 text-neutral-900 font-pretendard">
+    <div className=" bg-white flex items-center justify-center px-5 text-neutral-900 font-pretendard">
       <div className="w-full max-w-md bg-white rounded-3xl px-8 py-10 sm:px-9">
 
-        <div className="text-center mb-7">
-          <div className="mx-auto mb-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex items-center justify-center mt-30">
             <img src={LOGO} alt="logo" className="h-20 w-20 object-contain" />
           </div>
 
