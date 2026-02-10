@@ -44,27 +44,40 @@ const Login = () => {
   };
 
   const handleRegisterRecorder = async () => {
-    if (!recorderCode.trim()) {
-      alert("리코더 코드 입력칸이 비어있습니다");
-      return;
+  if (!recorderCode.trim()) {
+    alert("리코더 코드 입력칸이 비어있습니다");
+    return;
+  }
+
+  try {
+    const res = await registerRecorder(recorderCode.trim());
+    console.log("리코더 코드 등록 응답 =", res);
+
+    // 🔽 응답 구조에 맞게 보호자 정보 꺼내기
+    const recorderId = res?.data?.id;
+    const guardianUsername = res?.data?.username;   // ← 여기 중요
+    const guardianUserId = res?.data?.userId;       // ← 여기 중요
+
+    if (recorderId) {
+      localStorage.setItem("recorderId", recorderId);
     }
 
-    try {
-      const res = await registerRecorder(recorderCode.trim());
-
-      const recorderId = res?.data?.id;
-      console.log("등록된 recorderId =", recorderId);
-
-      if (recorderId) {
-        localStorage.setItem("recorderId", recorderId);
-      }
-      alert("리코더 코드 등록 완료");
-      navigate("/mypage2");
-    } catch (e) {
-      console.error(e);
-      alert("리코더 코드 등록 실패");
+    // ✅ 보호자 정보 localStorage 저장
+    if (guardianUsername) {
+      localStorage.setItem("guardianUsername", guardianUsername);
     }
-  };
+    if (guardianUserId) {
+      localStorage.setItem("guardianId", String(guardianUserId));
+    }
+
+    alert("리코더 코드 등록 완료");
+    navigate("/mypage2");
+  } catch (e) {
+    console.error(e);
+    alert("리코더 코드 등록 실패");
+  }
+};
+
 
   return (
     <div className=" bg-white flex items-center justify-center px-5 text-neutral-900 font-pretendard">

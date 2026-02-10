@@ -41,15 +41,28 @@ const Mypage_PeBoHoZa = () => {
       try {
         const recorderId = localStorage.getItem("recorderId");
         if (!recorderId) { setLoading(false); return; }
-        const userRes = await api.get(`/recorders/${recorderId}/user`);
-        const { username, id, code } = userRes?.data?.data || {};
+       const userRes = await api.get(`/recorders/${recorderId}/user`);
+        const { username, userId } = userRes?.data?.data || {};
         if (username) {
           setGuardianName(username);
-          if (id) setGuardianId(id);
-          if (code) setConnectionCode(code);
-          setIsPaired(true);
+         if (userId) setGuardianId(userId);
+           setIsPaired(true);
         }
-      } catch (e) { console.error(e); } finally { setLoading(false); }
+      } catch (e) { console.error(e);
+setIsPaired(true);
+
+     // 보호자 정보는 없으니 기본값 세팅
+     const storedGuardianName = localStorage.getItem("guardianUsername");
+ const storedGuardianId = localStorage.getItem("guardianId");
+
+ if (storedGuardianName) setGuardianName(storedGuardianName);
+ else setGuardianName("보호자");
+
+ if (storedGuardianId) setGuardianId(storedGuardianId);
+     setConnectionCode(localStorage.getItem("connectionCode") || "");
+
+
+       } finally { setLoading(false); }
     };
     fetchPairedGuardian();
 
@@ -303,7 +316,7 @@ const Mypage_PeBoHoZa = () => {
   };
 
   if (loading) return <div>로딩 중...</div>;
-  if (!isPaired) return <div>보호자와 연결되지 않았습니다. <button onClick={() => navigate("/")}>돌아가기</button></div>;
+  // if (!isPaired) return <div>보호자와 연결되지 않았습니다. <button onClick={() => navigate("/")}>돌아가기</button></div>;
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
