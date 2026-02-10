@@ -33,7 +33,7 @@ const Mypage_BoHoZa = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [recentFallCount, setRecentFallCount] = useState(0);
   const [alerts, setAlerts] = useState([]);
-const [fallDiff, setFallDiff] = useState(null);
+  const [fallDiff, setFallDiff] = useState(null);
 
   const messagingUnsubRef = useRef(null);
   const [pushPreview, setPushPreview] = useState(null); // 최근 수신(포그라운드) 미리보기
@@ -74,9 +74,9 @@ const [fallDiff, setFallDiff] = useState(null);
     // .env에 따옴표/공백/개행이 섞이면 Firebase 내부에서 atob 에러가 날 수 있어요.
     const vapidKey = typeof rawVapidKey === "string"
       ? rawVapidKey
-          .trim()
-          .replace(/^\"|\"$/g, "")
-          .replace(/^'|'$/g, "")
+        .trim()
+        .replace(/^\"|\"$/g, "")
+        .replace(/^'|'$/g, "")
       : rawVapidKey;
 
     return {
@@ -187,6 +187,18 @@ const [fallDiff, setFallDiff] = useState(null);
         const parsed = safeParseFcmPayload(payload);
         console.log("📥 [FCM foreground]", parsed);
 
+        // 포그라운드에서도 시스템 알림 띄우기 (원하면)
+        if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+          try {
+            new Notification(parsed.title || "알림", {
+              body: parsed.body || "",
+              icon: "/icons/alert-icon.png",
+            });
+          } catch (e) {
+            console.warn("포그라운드 Notification 표시 실패", e);
+          }
+        }
+
         // 화면에 간단 미리보기 표시
         setPushPreview({
           title: parsed.title,
@@ -210,77 +222,77 @@ const [fallDiff, setFallDiff] = useState(null);
 
   useEffect(() => {
     const fetchMyPageData = async () => {
-     try {
-  const list = await fetchRecorders();
-  setRecorders(list);
+      try {
+        const list = await fetchRecorders();
+        setRecorders(list);
 
-  if (list.length > 0) {
-    const savedId = localStorage.getItem("selectedRecorderId");
+        if (list.length > 0) {
+          const savedId = localStorage.getItem("selectedRecorderId");
 
-    let selected = null;
+          let selected = null;
 
-    if (savedId) {
-      selected = list.find((r) => String(r.id) === savedId);
-    }
+          if (savedId) {
+            selected = list.find((r) => String(r.id) === savedId);
+          }
 
-    if (!selected) {
-      selected = list.find((r) => r.status === "CONNECTED") || list[0];
-    }
+          if (!selected) {
+            selected = list.find((r) => r.status === "CONNECTED") || list[0];
+          }
 
-    setRecorder(selected);
-    setDeviceName(selected?.deviceName || "");
+          setRecorder(selected);
+          setDeviceName(selected?.deviceName || "");
 
-    const userRes = await api.get(`/recorders/${selected.id}/user`);
-    setUsername(userRes?.data?.data?.username || "");
-  }
+          const userRes = await api.get(`/recorders/${selected.id}/user`);
+          setUsername(userRes?.data?.data?.username || "");
+        }
 
-  const codeRes = await api.get("/code");
-  setRecorderCode(codeRes?.data?.data?.code || "");
+        const codeRes = await api.get("/code");
+        setRecorderCode(codeRes?.data?.data?.code || "");
 
-  const statsRes = await api.get("/histories/stats");
-  setRecentFallCount(statsRes?.data?.data?.recentWeekCount || 0);
+        const statsRes = await api.get("/histories/stats");
+        setRecentFallCount(statsRes?.data?.data?.recentWeekCount || 0);
 
-  // 🔽 낙상 빈도 비교 API 추가
-  try {
-    const diffRes = await getFallDiff();
-    setFallDiff(diffRes?.data?.data);  // "INCREASE" | "DECREASE" | "SAME"
-  } catch (e) {
-    console.error("낙상 빈도 비교 조회 실패", e);
-    setFallDiff(null);
-  }
+        // 🔽 낙상 빈도 비교 API 추가
+        try {
+          const diffRes = await getFallDiff();
+          setFallDiff(diffRes?.data?.data);  // "INCREASE" | "DECREASE" | "SAME"
+        } catch (e) {
+          console.error("낙상 빈도 비교 조회 실패", e);
+          setFallDiff(null);
+        }
 
-  // 🔽 낙상 빈도 비교 API 추가
-try {
-  const diffRes = await getFallDiff();
-  console.log("낙상 빈도 응답 = ", diffRes);
+        // 🔽 낙상 빈도 비교 API 추가
+        try {
+          const diffRes = await getFallDiff();
+          console.log("낙상 빈도 응답 = ", diffRes);
 
-  setFallDiff(diffRes?.data);  // ✅ 여기 수정
-} catch (e) {
-  console.error("낙상 빈도 비교 조회 실패", e);
-  setFallDiff(null);
-}
+          setFallDiff(diffRes?.data);  // ✅ 여기 수정
+        } catch (e) {
+          console.error("낙상 빈도 비교 조회 실패", e);
+          setFallDiff(null);
+        }
 
 
-  // 🔽 알림 목록 조회
-  try {
-    const alertRes = await getAlerts();
-    const alertList = Array.isArray(alertRes?.data)
-      ? alertRes.data
-      : Array.isArray(alertRes?.data?.data)
-      ? alertRes.data.data
-      : [];
+        // 🔽 알림 목록 조회
+        try {
+          const alertRes = await getAlerts();
+          const alertList = Array.isArray(alertRes?.data)
+            ? alertRes.data
+            : Array.isArray(alertRes?.data?.data)
+              ? alertRes.data.data
+              : [];
 
-    setAlerts(alertList.slice(0, 4));
-  } catch (err) {
-    console.error("알림 목록 조회 실패", err);
-    setAlerts([]);
-  }
+          setAlerts(alertList.slice(0, 4));
+        } catch (err) {
+          console.error("알림 목록 조회 실패", err);
+          setAlerts([]);
+        }
 
-} catch (e) {
-  console.error("마이페이지 데이터 조회 실패", e);
-} finally {
-  setLoading(false);
-}
+      } catch (e) {
+        console.error("마이페이지 데이터 조회 실패", e);
+      } finally {
+        setLoading(false);
+      }
 
     };
 
@@ -295,7 +307,7 @@ try {
     };
   }, []);
 
-  
+
 
   const handleUpdateDeviceName = async () => {
     if (!recorder) return;
@@ -451,16 +463,16 @@ try {
         </p>
 
         {fallDiff ? (
-  <p className="mt-1 text-sm inline-block text-[#9b9b9b] py-1 rounded">
-    {fallDiff === "INCREASE" && "지난달 대비 낙상 빈도가 증가했어요"}
-    {fallDiff === "DECREASE" && "지난달 대비 낙상 빈도가 감소했어요"}
-    {fallDiff === "SAME" && "지난달과 동일해요"}
-  </p>
-) : (
-  <p className="mt-1 text-xs text-gray-400">
-    낙상 빈도 분석 중...
-  </p>
-)}
+          <p className="mt-1 text-sm inline-block text-[#9b9b9b] py-1 rounded">
+            {fallDiff === "INCREASE" && "지난달 대비 낙상 빈도가 증가했어요"}
+            {fallDiff === "DECREASE" && "지난달 대비 낙상 빈도가 감소했어요"}
+            {fallDiff === "SAME" && "지난달과 동일해요"}
+          </p>
+        ) : (
+          <p className="mt-1 text-xs text-gray-400">
+            낙상 빈도 분석 중...
+          </p>
+        )}
 
         {/* Removed the two hard-coded alert cards here */}
 
