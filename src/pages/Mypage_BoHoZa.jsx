@@ -240,6 +240,7 @@ const Mypage_BoHoZa = () => {
           }
 
           setRecorder(selected);
+          localStorage.setItem("selectedRecorderId", String(selected.id));
           setDeviceName(selected?.deviceName || "");
 
           const userRes = await api.get(`/recorders/${selected.id}/user`);
