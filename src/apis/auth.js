@@ -1,8 +1,8 @@
 import api from "./api";
+const DEVICE_INFO_KEY = "deviceInfo";
 
 // deviceInfo (UUID) 생성 or 저장 == login 떄 사용
-const DEVICE_INFO_KEY = "deviceInfo";
-const getOrCreateDeviceInfo = () => {
+export const getOrCreateDeviceInfo = () => {
   if (typeof window === "undefined" || !window.localStorage) return "";
 
   let deviceInfo = localStorage.getItem(DEVICE_INFO_KEY);
@@ -90,6 +90,22 @@ export const getRecorderStatus = async (id) => {
     return res.data;
   } catch (error) {
     console.error("리코더 상태 조회 예외 터짐 = ", error);
+    throw error;
+  }
+};
+
+
+// GET : 리코더와 연결된 사용자(보호자) 정보 조회
+export const getRecorderUser = async (recorderId) => {
+  try {
+    console.log("GET : 리코더 연결 사용자(보호자) 정보 조회 요청 = ", { recorderId });
+
+    const res = await api.get(`/recorders/${recorderId}/user`);
+
+    console.log("GET : 리코더 연결 사용자(보호자) 정보 조회 응답 = ", res);
+    return res.data;
+  } catch (error) {
+    console.error("리코더 연결 사용자(보호자) 정보 조회 실패 = ", error);
     throw error;
   }
 };
