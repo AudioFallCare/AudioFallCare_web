@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../apis/api";
-import { logout } from "../apis/auth";
+import { logout, getRecorderUser } from "../apis/auth";
 
 const Mypage_PeBoHoZa = () => {
   const navigate = useNavigate();
@@ -13,6 +12,7 @@ const Mypage_PeBoHoZa = () => {
   const [isPaired, setIsPaired] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [wsResultText, setWsResultText] = useState("");
 
   // 레퍼런스
   const wsRef = useRef(null);
@@ -41,15 +41,29 @@ const Mypage_PeBoHoZa = () => {
       try {
         const recorderId = localStorage.getItem("recorderId");
         if (!recorderId) { setLoading(false); return; }
-        const userRes = await api.get(`/recorders/${recorderId}/user`);
-        const { username, id, code } = userRes?.data?.data || {};
+        const userRes = await getRecorderUser(recorderId);
+        const { username, userId } = userRes?.data || {};
         if (username) {
           setGuardianName(username);
-          if (id) setGuardianId(id);
-          if (code) setConnectionCode(code);
+          if (userId) setGuardianId(userId);
           setIsPaired(true);
         }
-      } catch (e) { console.error(e); } finally { setLoading(false); }
+      } catch (e) {
+        console.error(e);
+        setIsPaired(true);
+
+        // 보호자 정보는 없으니 기본값 세팅
+        const storedGuardianName = localStorage.getItem("guardianUsername");
+        const storedGuardianId = localStorage.getItem("guardianId");
+
+        if (storedGuardianName) setGuardianName(storedGuardianName);
+        else setGuardianName("보호자");
+
+        if (storedGuardianId) setGuardianId(storedGuardianId);
+        setConnectionCode(localStorage.getItem("connectionCode") || "");
+
+
+      } finally { setLoading(false); }
     };
     fetchPairedGuardian();
 
@@ -248,8 +262,18 @@ const Mypage_PeBoHoZa = () => {
         try {
           const response = JSON.parse(event.data);
           console.log("📥 [서버 응답]:", response);
+
+          const displayText =
+            (typeof response === "string" && response) ||
+            response?.message ||
+            response?.result ||
+            response?.data?.message ||
+            JSON.stringify(response);
+
+          setWsResultText(displayText);
         } catch (e) {
           console.log("📥 [서버 응답 (Raw)]:", event.data);
+          setWsResultText(String(event.data));
         }
       };
 
@@ -303,7 +327,7 @@ const Mypage_PeBoHoZa = () => {
   };
 
   if (loading) return <div>로딩 중...</div>;
-  if (!isPaired) return <div>보호자와 연결되지 않았습니다. <button onClick={() => navigate("/")}>돌아가기</button></div>;
+  // if (!isPaired) return <div>보호자와 연결되지 않았습니다. <button onClick={() => navigate("/")}>돌아가기</button></div>;
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
@@ -323,6 +347,12 @@ const Mypage_PeBoHoZa = () => {
       >
         {isStreaming ? "■" : "⏻"}
       </button>
+
+      {wsResultText ? (
+        <p className="mt-4 text-sm text-gray-700 text-center whitespace-pre-wrap">
+          {wsResultText}
+        </p>
+      ) : <p> 결과 대기 중 </p>}
     </div>
   );
 };

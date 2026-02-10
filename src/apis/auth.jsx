@@ -95,6 +95,22 @@ export const getRecorderStatus = async (id) => {
 };
 
 
+// GET : 리코더와 연결된 사용자(보호자) 정보 조회
+export const getRecorderUser = async (recorderId) => {
+  try {
+    console.log("GET : 리코더 연결 사용자(보호자) 정보 조회 요청 = ", { recorderId });
+
+    const res = await api.get(`/recorders/${recorderId}/user`);
+
+    console.log("GET : 리코더 연결 사용자(보호자) 정보 조회 응답 = ", res);
+    return res.data;
+  } catch (error) {
+    console.error("리코더 연결 사용자(보호자) 정보 조회 실패 = ", error);
+    throw error;
+  }
+};
+
+
 // B. 내부 통신 / FCM
 // ================================================================================================
 
@@ -402,3 +418,15 @@ export const getUnreadAlertCount = async () => {
     throw error;
   }
 }
+
+export const getFallDiff = async () => {
+  try {
+    console.log("GET : 지난달 대비 낙상 빈도 비교 요청");
+    const res = await api.get("/alerts/fall-diff");
+    console.log("GET : 지난달 대비 낙상 빈도 비교 응답 = ", res);
+    return res.data;
+  } catch (error) {
+    console.error("낙상 빈도 비교 조회 실패 = ", error);
+    throw error;
+  }
+};
