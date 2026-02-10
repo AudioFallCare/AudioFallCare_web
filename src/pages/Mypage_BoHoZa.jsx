@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../apis/api";
 import { useNavigate } from "react-router-dom";
-import { logout, getAlerts } from "../apis/auth";
+import { logout, getAlerts, markAlertAsRead } from "../apis/auth";
 
 const Mypage_BoHoZa = () => {
   const navigate = useNavigate();
@@ -151,9 +151,23 @@ const Mypage_BoHoZa = () => {
               alerts.map((item) => (
                 <div
                   key={item.id}
-                  className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3 transition"
+                  onClick={async () => {
+                    try {
+                      await markAlertAsRead(item.id);
+                      navigate("/falllog");
+                    } catch (e) {
+                      console.error("알림 읽음 처리 실패", e);
+                    }
+                  }}
+                  className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3 transition cursor-pointer hover:bg-gray-50"
                 >
-                  <div className="w-8 h-8 min-w-8 min-h-8 flex-shrink-0 flex items-center justify-center rounded-full border border-red-400 text-red-500 font-bold">
+                  <div
+                    className={`w-8 h-8 min-w-8 min-h-8 flex-shrink-0 flex items-center justify-center rounded-full border font-bold
+                      ${item.isRead
+                        ? "border-gray-400 text-gray-700"
+                        : "border-red-400 text-red-500"
+                      }`}
+                  >
                     i
                   </div>
 
@@ -248,9 +262,23 @@ const Mypage_BoHoZa = () => {
               alerts.map((item) => (
                 <div
                   key={item.id}
-                  className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3 transition"
+                  onClick={async () => {
+                    try {
+                      await markAlertAsRead(item.id);
+                      navigate("/falllog");
+                    } catch (e) {
+                      console.error("알림 읽음 처리 실패", e);
+                    }
+                  }}
+                  className="w-full rounded-xl shadow-md border p-4 flex items-center gap-3 transition cursor-pointer hover:bg-gray-50"
                 >
-                  <div className="w-8 h-8 min-w-8 min-h-8 flex-shrink-0 flex items-center justify-center rounded-full border border-red-400 text-red-500 font-bold">
+                  <div
+                    className={`w-8 h-8 min-w-8 min-h-8 flex-shrink-0 flex items-center justify-center rounded-full border font-bold
+                      ${item.isRead
+                        ? "border-gray-400 text-gray-700"
+                        : "border-red-400 text-red-500"
+                      }`}
+                  >
                     i
                   </div>
 
