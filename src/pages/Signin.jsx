@@ -62,7 +62,7 @@ const Login = () => {
       localStorage.setItem("recorderId", recorderId);
     }
 
-    // ✅ 보호자 정보 localStorage 저장
+    // ✅ 보호자 정보 localStorage 저장하기
     if (guardianUsername) {
       localStorage.setItem("guardianUsername", guardianUsername);
     }
