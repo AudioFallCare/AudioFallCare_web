@@ -1,8 +1,8 @@
 import api from "./api";
+const DEVICE_INFO_KEY = "deviceInfo";
 
 // deviceInfo (UUID) 생성 or 저장 == login 떄 사용
-const DEVICE_INFO_KEY = "deviceInfo";
-const getOrCreateDeviceInfo = () => {
+export const getOrCreateDeviceInfo = () => {
   if (typeof window === "undefined" || !window.localStorage) return "";
 
   let deviceInfo = localStorage.getItem(DEVICE_INFO_KEY);
