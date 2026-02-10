@@ -64,14 +64,7 @@ const Signup = () => {
             </p>
           )}
 
-          {/* 이메일 */}
-          <input
-            name="email"
-            placeholder="사용하실 이메일을 작성해주세요"
-            onChange={handleChange}
-            className="w-full px-3 py-3 border border-[#AFAFAF] rounded-xl focus:outline-none"
-          />
-
+         
           {/* 우편번호 + 주소 검색 */}
           <div className="flex gap-2">
             <input

@@ -6,7 +6,6 @@ const useSignupForm = () => {
     username: "",
     password: "",
     passwordConfirm: "",
-    email: "",
     zipcode: "",
     address: "",
     addressDetail: "",
@@ -49,20 +48,17 @@ const useSignupForm = () => {
       username: form.username,
       password: form.password,
       passwordConfirm: form.passwordConfirm,
-      email: form.email,
       zipcode: form.zipcode,
       address: form.address,
       addressDetail: form.addressDetail,
     });
   };
 
-  const isEmailValid = /\S+@\S+\.\S+/.test(form.email);
 
   const isFormValid =
     form.username &&
     form.password &&
     form.passwordConfirm &&
-    isEmailValid &&
     form.zipcode &&
     form.address &&
     form.password === form.passwordConfirm;
