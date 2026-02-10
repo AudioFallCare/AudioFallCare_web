@@ -6,8 +6,12 @@ import Guardian from './pages/Guardian'
 import Mypage_BoHoZa from './pages/Mypage_BoHoZa'
 import Mypage_PeBoHoZa from './pages/Mypage_PeBoHoZa'
 import Fall_LOG from './pages/Fall_LOG'
+import useDisconnectRecorderOnRefresh from "./hooks/disconnectRefresh";
 
 const App = () => {
+
+  useDisconnectRecorderOnRefresh();
+  
   return (
     <BrowserRouter>
       <Layout>
