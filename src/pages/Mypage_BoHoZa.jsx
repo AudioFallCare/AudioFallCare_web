@@ -215,37 +215,37 @@ const Mypage_BoHoZa = () => {
     }
   };
 
-  const fetchRecorders = async () => {
-    const res = await api.get("/recorders");
-    return res?.data?.data || [];
-  };
+  // const fetchRecorders = async () => {
+  //   const res = await api.get("/recorders");
+  //   return res?.data?.data || [];
+  // };
 
   useEffect(() => {
     const fetchMyPageData = async () => {
       try {
-        const list = await fetchRecorders();
-        setRecorders(list);
+        // const list = await fetchRecorders();
+        // setRecorders(list);
 
-        if (list.length > 0) {
-          const savedId = localStorage.getItem("selectedRecorderId");
+        // if (list.length > 0) {
+        //   const savedId = localStorage.getItem("selectedRecorderId");
 
-          let selected = null;
+        //   let selected = null;
 
-          if (savedId) {
-            selected = list.find((r) => String(r.id) === savedId);
-          }
+        //   if (savedId) {
+        //     selected = list.find((r) => String(r.id) === savedId);
+        //   }
 
-          if (!selected) {
-            selected = list.find((r) => r.status === "CONNECTED") || list[0];
-          }
+        //   if (!selected) {
+        //     selected = list.find((r) => r.status === "CONNECTED") || list[0];
+        //   }
 
-          setRecorder(selected);
-          localStorage.setItem("selectedRecorderId", String(selected.id));
-          setDeviceName(selected?.deviceName || "");
+        //   setRecorder(selected);
+        //   localStorage.setItem("selectedRecorderId", String(selected.id));
+        //   setDeviceName(selected?.deviceName || "");
 
-          const userRes = await api.get(`/recorders/${selected.id}/user`);
-          setUsername(userRes?.data?.data?.username || "");
-        }
+        //   const userRes = await api.get(`/recorders/${selected.id}/user`);
+        //   setUsername(userRes?.data?.data?.username || "");
+        // }
 
         const codeRes = await api.get("/code");
         setRecorderCode(codeRes?.data?.data?.code || "");
